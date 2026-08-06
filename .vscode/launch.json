@@ -5,7 +5,7 @@
       "name": "啟動前後端 API 範例",
       "type": "debugpy",
       "request": "launch",
-      "program": "${workspaceFolder}/api_example/server.py",
+      "program": "${workspaceFolder}/server.py",
       "console": "integratedTerminal"
     }
   ]

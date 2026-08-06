@@ -7,7 +7,7 @@
 在專案根目錄執行：
 
 ```powershell
-python api_example/server.py
+py server.py
 ```
 
 然後開啟 <http://127.0.0.1:8000>。也可以在 VS Code 的「執行與偵錯」選擇 **啟動前後端 API 範例**。
