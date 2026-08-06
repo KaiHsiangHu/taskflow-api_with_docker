@@ -9,8 +9,14 @@ from pathlib import Path
 from urllib.parse import urlparse
 
 
-HOST = "127.0.0.1"
-PORT = 8000
+# HOST = "127.0.0.1"
+# PORT = 8000
+
+import os
+
+HOST = "0.0.0.0"
+PORT = int(os.environ.get("PORT", "8000"))
+
 STATIC_DIR = Path(__file__).with_name("frontend")
 
 
