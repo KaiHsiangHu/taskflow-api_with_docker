@@ -1,0 +1,12 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "啟動前後端 API 範例",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "${workspaceFolder}/api_example/server.py",
+      "console": "integratedTerminal"
+    }
+  ]
+}

@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-labelledby="title">
+  <title id="title">TaskFlow</title>
+  <defs>
+    <linearGradient id="bg" x1="8" y1="6" x2="57" y2="60" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#7C8BE8"/>
+      <stop offset="1" stop-color="#4A56AD"/>
+    </linearGradient>
+  </defs>
+  <rect width="64" height="64" rx="17" fill="url(#bg)"/>
+  <path d="M18 19.5h28a4 4 0 0 1 4 4v21a4 4 0 0 1-4 4H18a4 4 0 0 1-4-4v-21a4 4 0 0 1 4-4Z" fill="white" fill-opacity=".16" stroke="white" stroke-width="2"/>
+  <path d="m21 34 6.5 6.5L43.5 25" fill="none" stroke="white" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>

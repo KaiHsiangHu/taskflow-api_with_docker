@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>待辦事項 API 範例</title>
+  <link rel="icon" href="/logo.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <main class="card">
+    <header class="brand">
+      <img class="logo" src="/logo.svg" alt="TaskFlow Logo">
+      <div>
+        <strong>TaskFlow</strong>
+        <p class="eyebrow">FULL-STACK API DEMO</p>
+      </div>
+    </header>
+    <h1>今天要完成什麼？</h1>
+    <p class="intro">這個頁面會透過 REST API 讀寫後端的待辦資料。</p>
+    <form id="task-form">
+      <input id="title" maxlength="80" placeholder="輸入新的待辦事項…" required>
+      <button type="submit">新增</button>
+    </form>
+    <p id="message" role="status"></p>
+    <ul id="tasks" aria-label="待辦事項"></ul>
+  </main>
+  <script src="/app.js"></script>
+</body>
+</html>
