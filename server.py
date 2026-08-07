@@ -3,19 +3,23 @@
 from __future__ import annotations
 
 import json
+import os
+import secrets
+from http.cookies import SimpleCookie
 from http import HTTPStatus
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 from urllib.parse import urlparse
 
+from dotenv import load_dotenv
 
-# HOST = "127.0.0.1"
-# PORT = 8000
 
-import os
+load_dotenv()
 
-HOST = "0.0.0.0"
+
+HOST = os.environ.get("HOST", "127.0.0.1")
 PORT = int(os.environ.get("PORT", "8000"))
+APP_PASSWORD = os.environ.get("APP_PASSWORD", "taskflow123")
 
 STATIC_DIR = Path(__file__).with_name("frontend")
 
@@ -55,15 +59,24 @@ class TaskStore:
 
 
 STORE = TaskStore()
+SESSIONS: set[str] = set()
 
 
 class ApiHandler(BaseHTTPRequestHandler):
     server_version = "TaskApi/1.0"
 
-    def _json(self, data: object, status: HTTPStatus = HTTPStatus.OK) -> None:
+    def _json(
+        self,
+        data: object,
+        status: HTTPStatus = HTTPStatus.OK,
+        headers: dict[str, str] | None = None,
+    ) -> None:
         body = json.dumps(data, ensure_ascii=False).encode("utf-8")
         self.send_response(status)
         self.send_header("Content-Type", "application/json; charset=utf-8")
+        self.send_header("Cache-Control", "no-store")
+        for name, value in (headers or {}).items():
+            self.send_header(name, value)
         self.send_header("Content-Length", str(len(body)))
         self.end_headers()
         self.wfile.write(body)
@@ -85,10 +98,38 @@ class ApiHandler(BaseHTTPRequestHandler):
         except ValueError:
             return None
 
+    def _session_token(self) -> str | None:
+        cookie = SimpleCookie(self.headers.get("Cookie", ""))
+        session = cookie.get("taskflow_session")
+        return session.value if session else None
+
+    def _is_authenticated(self) -> bool:
+        token = self._session_token()
+        return token is not None and token in SESSIONS
+
+    def _require_auth(self) -> bool:
+        if self._is_authenticated():
+            return True
+        self._json({"error": "請先登入"}, HTTPStatus.UNAUTHORIZED)
+        return False
+
+    def _cookie_header(self, token: str, max_age: int | None = None) -> str:
+        parts = [f"taskflow_session={token}", "Path=/", "HttpOnly", "SameSite=Strict"]
+        if self.headers.get("X-Forwarded-Proto") == "https":
+            parts.append("Secure")
+        if max_age is not None:
+            parts.append(f"Max-Age={max_age}")
+        return "; ".join(parts)
+
     def do_GET(self) -> None:
         path = urlparse(self.path).path
         if path == "/api/tasks":
+            if not self._require_auth():
+                return
             self._json(STORE.list())
+            return
+        if path == "/api/auth":
+            self._json({"authenticated": self._is_authenticated()})
             return
         if path == "/api/health":
             self._json({"status": "ok"})
@@ -96,8 +137,33 @@ class ApiHandler(BaseHTTPRequestHandler):
         self._serve_static(path)
 
     def do_POST(self) -> None:
-        if urlparse(self.path).path != "/api/tasks":
+        path = urlparse(self.path).path
+        if path == "/api/login":
+            data = self._read_json()
+            password = data.get("password", "") if data else ""
+            if not isinstance(password, str) or not secrets.compare_digest(password, APP_PASSWORD):
+                self._json({"error": "密碼錯誤"}, HTTPStatus.UNAUTHORIZED)
+                return
+            token = secrets.token_urlsafe(32)
+            SESSIONS.add(token)
+            self._json(
+                {"authenticated": True},
+                headers={"Set-Cookie": self._cookie_header(token)},
+            )
+            return
+        if path == "/api/logout":
+            token = self._session_token()
+            if token:
+                SESSIONS.discard(token)
+            self._json(
+                {"authenticated": False},
+                headers={"Set-Cookie": self._cookie_header("", max_age=0)},
+            )
+            return
+        if path != "/api/tasks":
             self._json({"error": "找不到 API"}, HTTPStatus.NOT_FOUND)
+            return
+        if not self._require_auth():
             return
         data = self._read_json()
         title = data.get("title", "").strip() if data else ""
@@ -107,6 +173,8 @@ class ApiHandler(BaseHTTPRequestHandler):
         self._json(STORE.create(title), HTTPStatus.CREATED)
 
     def do_PATCH(self) -> None:
+        if not self._require_auth():
+            return
         task_id = self._task_id(urlparse(self.path).path)
         data = self._read_json()
         if task_id is None or data is None:
@@ -128,6 +196,8 @@ class ApiHandler(BaseHTTPRequestHandler):
                    HTTPStatus.OK if task else HTTPStatus.NOT_FOUND)
 
     def do_DELETE(self) -> None:
+        if not self._require_auth():
+            return
         task_id = self._task_id(urlparse(self.path).path)
         if task_id is None:
             self._json({"error": "請求格式錯誤"}, HTTPStatus.BAD_REQUEST)

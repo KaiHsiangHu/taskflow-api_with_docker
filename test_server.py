@@ -10,7 +10,6 @@ import server
 class ApiTest(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        server.STORE = server.TaskStore()
         cls.httpd = ThreadingHTTPServer(("127.0.0.1", 0), server.ApiHandler)
         cls.thread = threading.Thread(target=cls.httpd.serve_forever, daemon=True)
         cls.thread.start()
@@ -21,16 +20,38 @@ class ApiTest(unittest.TestCase):
         cls.httpd.shutdown()
         cls.httpd.server_close()
 
+    def setUp(self):
+        server.STORE = server.TaskStore()
+        server.SESSIONS.clear()
+        self.cookie = None
+
     def request(self, method, path, body=None):
         connection = HTTPConnection("127.0.0.1", self.port)
         encoded = json.dumps(body).encode() if body is not None else None
-        connection.request(method, path, encoded, {"Content-Type": "application/json"})
+        headers = {"Content-Type": "application/json"}
+        if self.cookie:
+            headers["Cookie"] = self.cookie
+        connection.request(method, path, encoded, headers)
         response = connection.getresponse()
         data = response.read()
+        set_cookie = response.getheader("Set-Cookie")
+        if set_cookie:
+            self.cookie = set_cookie.split(";", 1)[0]
         connection.close()
         return response.status, json.loads(data) if data else None
 
+    def login(self, password=None):
+        return self.request(
+            "POST",
+            "/api/login",
+            {"password": password or server.APP_PASSWORD},
+        )
+
     def test_task_crud(self):
+        status, auth = self.login()
+        self.assertEqual(status, 200)
+        self.assertTrue(auth["authenticated"])
+
         status, tasks = self.request("GET", "/api/tasks")
         self.assertEqual(status, 200)
         self.assertEqual(len(tasks), 2)
@@ -47,9 +68,26 @@ class ApiTest(unittest.TestCase):
         self.assertEqual(status, 204)
 
     def test_validation(self):
+        self.login()
         status, error = self.request("POST", "/api/tasks", {"title": "  "})
         self.assertEqual(status, 400)
         self.assertIn("error", error)
+
+    def test_authentication_required(self):
+        status, error = self.request("GET", "/api/tasks")
+        self.assertEqual(status, 401)
+        self.assertEqual(error["error"], "請先登入")
+
+        status, error = self.login("wrong-password")
+        self.assertEqual(status, 401)
+        self.assertEqual(error["error"], "密碼錯誤")
+
+    def test_logout(self):
+        self.login()
+        status, _ = self.request("POST", "/api/logout", {})
+        self.assertEqual(status, 200)
+        status, _ = self.request("GET", "/api/tasks")
+        self.assertEqual(status, 401)
 
 
 if __name__ == "__main__":

@@ -12,11 +12,30 @@ py server.py
 
 然後開啟 <http://127.0.0.1:8000>。也可以在 VS Code 的「執行與偵錯」選擇 **啟動前後端 API 範例**。
 
+## 設定登入密碼
+
+第一次使用時，安裝相依套件：
+
+```powershell
+conda install python-dotenv requests
+```
+
+接著修改專案第一層的 `.env`：
+
+```dotenv
+APP_PASSWORD=換成你的密碼
+```
+
+直接執行 `python server.py` 時，程式會自動讀取 `.env`。這個檔案已被 `.gitignore` 排除，不會推送到 GitHub；`.env.example` 只提供欄位範例，可以正常提交。部署到 Render 時，不會使用本機 `.env`，請在服務的 **Environment** 頁面另外新增 `APP_PASSWORD`。
+
 ## API
 
 | Method | Endpoint | 說明 |
 |---|---|---|
 | `GET` | `/api/health` | 健康檢查 |
+| `GET` | `/api/auth` | 查詢登入狀態 |
+| `POST` | `/api/login` | 登入，body: `{"password":"密碼"}` |
+| `POST` | `/api/logout` | 登出 |
 | `GET` | `/api/tasks` | 取得全部待辦 |
 | `POST` | `/api/tasks` | 新增待辦，body: `{"title":"內容"}` |
 | `PATCH` | `/api/tasks/:id` | 更新待辦，body: `{"completed":true}` |
