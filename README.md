@@ -37,6 +37,7 @@ APP_PASSWORD=換成你的密碼
 | `POST` | `/api/login` | 登入，body: `{"password":"密碼"}` |
 | `POST` | `/api/logout` | 登出 |
 | `GET` | `/api/tasks` | 取得全部待辦 |
+| `GET` | `/api/zodiac` | 取得星座；可用 `?q=獅子` 搜尋 |
 | `POST` | `/api/tasks` | 新增待辦，body: `{"title":"內容"}` |
 | `PATCH` | `/api/tasks/:id` | 更新待辦，body: `{"completed":true}` |
 | `DELETE` | `/api/tasks/:id` | 刪除待辦 |

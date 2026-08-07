@@ -26,19 +26,35 @@
       <p id="login-message" class="message" role="alert"></p>
     </section>
     <section id="app-view" hidden>
-      <div class="page-heading">
+      <nav class="tabs" aria-label="功能選單">
+        <button class="tab active" type="button" data-tab="tasks">待辦事項</button>
+        <button class="tab" type="button" data-tab="zodiac">星座探索</button>
+        <button id="logout" class="secondary logout" type="button">登出</button>
+      </nav>
+      <section id="tasks-panel" class="tab-panel">
+        <div class="page-heading">
         <div>
           <h1>今天要完成什麼？</h1>
           <p class="intro">這個頁面會透過 REST API 讀寫後端的待辦資料。</p>
         </div>
-        <button id="logout" class="secondary" type="button">登出</button>
-      </div>
-      <form id="task-form">
-        <input id="title" maxlength="80" placeholder="輸入新的待辦事項…" required>
-        <button type="submit">新增</button>
-      </form>
-      <p id="message" class="message" role="status"></p>
-      <ul id="tasks" aria-label="待辦事項"></ul>
+        </div>
+        <form id="task-form">
+          <input id="title" maxlength="80" placeholder="輸入新的待辦事項…" required>
+          <button type="submit">新增</button>
+        </form>
+        <p id="message" class="message" role="status"></p>
+        <ul id="tasks" aria-label="待辦事項"></ul>
+      </section>
+      <section id="zodiac-panel" class="tab-panel" hidden>
+        <h1>探索你的星座</h1>
+        <p class="intro">搜尋或勾選一至多個星座，比較日期與常見性格。</p>
+        <label class="search-label" for="zodiac-search">搜尋星座</label>
+        <input id="zodiac-search" type="search" placeholder="例如：獅子、Leo、火象…">
+        <div id="zodiac-options" class="zodiac-options" aria-label="選擇星座"></div>
+        <p id="zodiac-message" class="message" role="status"></p>
+        <div id="zodiac-results" class="zodiac-results"></div>
+        <p class="disclaimer">星座性格內容僅供娛樂與自我探索，不代表科學或心理診斷；交界日期可能因年份與占星系統略有差異。</p>
+      </section>
     </section>
   </main>
   <script src="/app.js"></script>

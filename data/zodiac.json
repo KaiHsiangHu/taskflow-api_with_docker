@@ -1,0 +1,14 @@
+[
+  {"id":"aries","symbol":"♈","name":"牡羊座","english":"Aries","dates":"3/21－4/19","element":"火象","traits":["勇於行動","熱情直接","喜歡挑戰"],"strength":"充滿開創力，面對新任務時通常很有衝勁。","watchout":"行動太快時，可能忽略細節或他人的步調。"},
+  {"id":"taurus","symbol":"♉","name":"金牛座","english":"Taurus","dates":"4/20－5/20","element":"土象","traits":["穩定務實","重視品質","有耐心"],"strength":"能穩健累積成果，也很重視生活中的舒適與美感。","watchout":"習慣既有節奏後，面對突然改變可能需要較多時間。"},
+  {"id":"gemini","symbol":"♊","name":"雙子座","english":"Gemini","dates":"5/21－6/20","element":"風象","traits":["好奇靈活","善於溝通","興趣廣泛"],"strength":"學習速度快，能從不同角度理解與傳遞資訊。","watchout":"同時投入太多事情時，注意力可能較容易分散。"},
+  {"id":"cancer","symbol":"♋","name":"巨蟹座","english":"Cancer","dates":"6/21－7/22","element":"水象","traits":["細膩體貼","重視歸屬","富同理心"],"strength":"善於察覺情緒，也願意照顧重視的人。","watchout":"敏感時可能把情緒留在心裡，需要適時表達需求。"},
+  {"id":"leo","symbol":"♌","name":"獅子座","english":"Leo","dates":"7/23－8/22","element":"火象","traits":["自信熱情","慷慨大方","有領導力"],"strength":"有感染力，常能鼓舞團隊並勇於承擔責任。","watchout":"很在意認同時，可能不容易接受不同意見。"},
+  {"id":"virgo","symbol":"♍","name":"處女座","english":"Virgo","dates":"8/23－9/22","element":"土象","traits":["細心務實","重視秩序","善於分析"],"strength":"能發現問題並持續改善，做事講究品質。","watchout":"標準太高時，容易對自己或他人過度挑剔。"},
+  {"id":"libra","symbol":"♎","name":"天秤座","english":"Libra","dates":"9/23－10/22","element":"風象","traits":["重視公平","善於協調","追求和諧"],"strength":"能理解不同立場，擅長在人際關係中尋找平衡。","watchout":"考量太多選項時，可能延後做出決定。"},
+  {"id":"scorpio","symbol":"♏","name":"天蠍座","english":"Scorpio","dates":"10/23－11/21","element":"水象","traits":["專注深刻","意志堅定","重視信任"],"strength":"對在意的目標投入度高，也有很強的洞察力。","watchout":"受到傷害時可能較難放下，需要練習建立界線。"},
+  {"id":"sagittarius","symbol":"♐","name":"射手座","english":"Sagittarius","dates":"11/22－12/21","element":"火象","traits":["樂觀坦率","熱愛自由","喜歡探索"],"strength":"視野開闊，願意嘗試新事物並分享自己的熱情。","watchout":"追求自由時，可能忽略承諾或說話過於直接。"},
+  {"id":"capricorn","symbol":"♑","name":"摩羯座","english":"Capricorn","dates":"12/22－1/19","element":"土象","traits":["自律可靠","目標明確","重視責任"],"strength":"擅長長期規劃，能靠耐力一步步完成目標。","watchout":"過度專注成果時，容易忘記休息或表達感受。"},
+  {"id":"aquarius","symbol":"♒","name":"水瓶座","english":"Aquarius","dates":"1/20－2/18","element":"風象","traits":["獨立創新","重視理念","思考開放"],"strength":"勇於挑戰慣例，常能提出不同於常規的新觀點。","watchout":"專注理性與想法時，可能讓人感覺較有距離。"},
+  {"id":"pisces","symbol":"♓","name":"雙魚座","english":"Pisces","dates":"2/19－3/20","element":"水象","traits":["想像豐富","溫柔敏銳","富有同情心"],"strength":"感受力與創造力豐富，容易理解他人的情緒。","watchout":"吸收太多外界情緒時，需要保留自己的空間與界線。"}
+]

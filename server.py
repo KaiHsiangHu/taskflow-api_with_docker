@@ -9,7 +9,7 @@ from http.cookies import SimpleCookie
 from http import HTTPStatus
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
-from urllib.parse import urlparse
+from urllib.parse import parse_qs, urlparse
 
 from dotenv import load_dotenv
 
@@ -22,6 +22,8 @@ PORT = int(os.environ.get("PORT", "8000"))
 APP_PASSWORD = os.environ.get("APP_PASSWORD", "taskflow123")
 
 STATIC_DIR = Path(__file__).with_name("frontend")
+ZODIAC_FILE = Path(__file__).with_name("data") / "zodiac.json"
+ZODIAC_SIGNS = json.loads(ZODIAC_FILE.read_text(encoding="utf-8"))
 
 
 class TaskStore:
@@ -122,11 +124,26 @@ class ApiHandler(BaseHTTPRequestHandler):
         return "; ".join(parts)
 
     def do_GET(self) -> None:
-        path = urlparse(self.path).path
+        parsed = urlparse(self.path)
+        path = parsed.path
         if path == "/api/tasks":
             if not self._require_auth():
                 return
             self._json(STORE.list())
+            return
+        if path == "/api/zodiac":
+            if not self._require_auth():
+                return
+            query = parse_qs(parsed.query).get("q", [""])[0].strip().casefold()
+            signs = ZODIAC_SIGNS
+            if query:
+                signs = [
+                    sign for sign in signs
+                    if query in sign["name"].casefold()
+                    or query in sign["english"].casefold()
+                    or query in sign["element"].casefold()
+                ]
+            self._json(signs)
             return
         if path == "/api/auth":
             self._json({"authenticated": self._is_authenticated()})

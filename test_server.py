@@ -89,6 +89,19 @@ class ApiTest(unittest.TestCase):
         status, _ = self.request("GET", "/api/tasks")
         self.assertEqual(status, 401)
 
+    def test_zodiac_search(self):
+        status, _ = self.request("GET", "/api/zodiac")
+        self.assertEqual(status, 401)
+
+        self.login()
+        status, signs = self.request("GET", "/api/zodiac")
+        self.assertEqual(status, 200)
+        self.assertEqual(len(signs), 12)
+
+        status, signs = self.request("GET", "/api/zodiac?q=Leo")
+        self.assertEqual(status, 200)
+        self.assertEqual([sign["id"] for sign in signs], ["leo"])
+
 
 if __name__ == "__main__":
     unittest.main()
