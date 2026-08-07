@@ -12,6 +12,7 @@ h1 { margin: 6px 0; font-size: clamp(28px, 6vw, 42px); }
 .page-heading .intro { margin-bottom: 26px; }
 form { display: flex; gap: 10px; }
 input { min-width: 0; flex: 1; border: 1px solid #d0d5dd; border-radius: 10px; padding: 13px; font: inherit; }
+select, textarea { width: 100%; border: 1px solid #d0d5dd; border-radius: 10px; padding: 13px; font: inherit; background: white; }
 button { border: 0; border-radius: 10px; padding: 12px 18px; color: white; background: #5c6ac4; font-weight: 700; cursor: pointer; }
 .message { min-height: 20px; color: #c2413b; }
 .secondary { flex: 0 0 auto; padding: 8px 12px; color: #475467; background: #eef1f6; }
@@ -40,6 +41,14 @@ button { border: 0; border-radius: 10px; padding: 12px 18px; color: white; backg
 .element-風 { border-top-color: #7c8be8; }
 .element-水 { border-top-color: #36a3b9; }
 .disclaimer { margin-top: 22px; color: #98a2b3; font-size: 12px; line-height: 1.6; }
+.ai-form { display: grid; gap: 16px; }
+.ai-form label { display: grid; gap: 7px; color: #475467; font-size: 13px; font-weight: 700; }
+.date-fields { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+.ai-form button { justify-self: start; }
+button:disabled { opacity: .65; cursor: wait; }
+.ai-result { margin-top: 12px; overflow: hidden; border: 1px solid #d9ddf7; border-radius: 15px; background: #fafbff; }
+.ai-zodiac { padding: 15px 20px; color: #414b9b; background: #eef0ff; font-size: 18px; font-weight: 800; }
+.ai-reading { padding: 22px; color: #344054; line-height: 1.85; white-space: pre-wrap; }
 ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
 li { display: flex; align-items: center; gap: 12px; padding: 14px; border-radius: 12px; background: #f7f8fb; }
 li span { flex: 1; }
@@ -51,4 +60,7 @@ li input { flex: 0 0 auto; width: 18px; height: 18px; accent-color: #5c6ac4; }
   form { flex-direction: column; }
   .zodiac-options { grid-template-columns: repeat(2, 1fr); }
   .zodiac-results { grid-template-columns: 1fr; }
+  .date-fields { grid-template-columns: 1fr; }
+  .tabs { flex-wrap: wrap; }
+  .logout { margin-left: 0; }
 }

@@ -3,6 +3,7 @@ import threading
 import unittest
 from http.client import HTTPConnection
 from http.server import ThreadingHTTPServer
+from unittest.mock import patch
 
 import server
 
@@ -101,6 +102,29 @@ class ApiTest(unittest.TestCase):
         status, signs = self.request("GET", "/api/zodiac?q=Leo")
         self.assertEqual(status, 200)
         self.assertEqual([sign["id"] for sign in signs], ["leo"])
+
+    def test_ai_reading_uses_deterministic_zodiac(self):
+        self.login()
+        with patch("server.generate_ai_reading", return_value="這是測試解讀") as generate:
+            status, result = self.request(
+                "POST",
+                "/api/ai-reading",
+                {"month": 8, "day": 7, "focus": "團隊合作"},
+            )
+        self.assertEqual(status, 200)
+        self.assertEqual(result["zodiac"]["id"], "leo")
+        self.assertEqual(result["reading"], "這是測試解讀")
+        self.assertEqual(generate.call_args.args[1], "團隊合作")
+
+    def test_ai_reading_rejects_invalid_date(self):
+        self.login()
+        status, error = self.request(
+            "POST",
+            "/api/ai-reading",
+            {"month": 2, "day": 31, "focus": ""},
+        )
+        self.assertEqual(status, 400)
+        self.assertIn("有效日期", error["error"])
 
 
 if __name__ == "__main__":

@@ -29,6 +29,7 @@
       <nav class="tabs" aria-label="功能選單">
         <button class="tab active" type="button" data-tab="tasks">待辦事項</button>
         <button class="tab" type="button" data-tab="zodiac">星座探索</button>
+        <button class="tab" type="button" data-tab="ai">AI 個人解讀</button>
         <button id="logout" class="secondary logout" type="button">登出</button>
       </nav>
       <section id="tasks-panel" class="tab-panel">
@@ -54,6 +55,36 @@
         <p id="zodiac-message" class="message" role="status"></p>
         <div id="zodiac-results" class="zodiac-results"></div>
         <p class="disclaimer">星座性格內容僅供娛樂與自我探索，不代表科學或心理診斷；交界日期可能因年份與占星系統略有差異。</p>
+      </section>
+      <section id="ai-panel" class="tab-panel" hidden>
+        <h1>AI 個人星座解讀</h1>
+        <p class="intro">選擇生日，我們會先精確判斷星座，再由 Gemini 提供個人化內容。</p>
+        <form id="ai-form" class="ai-form">
+          <div class="date-fields">
+            <label>出生月份
+              <select id="birth-month" required>
+                <option value="">請選擇</option>
+                <option value="1">1 月</option><option value="2">2 月</option><option value="3">3 月</option>
+                <option value="4">4 月</option><option value="5">5 月</option><option value="6">6 月</option>
+                <option value="7">7 月</option><option value="8">8 月</option><option value="9">9 月</option>
+                <option value="10">10 月</option><option value="11">11 月</option><option value="12">12 月</option>
+              </select>
+            </label>
+            <label>出生日期
+              <input id="birth-day" type="number" min="1" max="31" placeholder="例如 7" required>
+            </label>
+          </div>
+          <label>你想了解什麼？（選填）
+            <textarea id="reading-focus" maxlength="500" rows="4" placeholder="例如：我在團隊合作中可以如何發揮優勢？"></textarea>
+          </label>
+          <button id="ai-submit" type="submit">產生 AI 解讀</button>
+        </form>
+        <p id="ai-message" class="message" role="status"></p>
+        <article id="ai-result" class="ai-result" hidden>
+          <div id="ai-zodiac" class="ai-zodiac"></div>
+          <div id="ai-reading" class="ai-reading"></div>
+        </article>
+        <p class="disclaimer">請勿輸入姓名、電話、地址等敏感個資。AI 內容僅供娛樂與自我探索，不構成心理、醫療、法律或財務建議。</p>
       </section>
     </section>
   </main>

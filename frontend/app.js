@@ -15,6 +15,16 @@ const zodiacSearch = document.querySelector('#zodiac-search');
 const zodiacOptions = document.querySelector('#zodiac-options');
 const zodiacResults = document.querySelector('#zodiac-results');
 const zodiacMessage = document.querySelector('#zodiac-message');
+const aiPanel = document.querySelector('#ai-panel');
+const aiForm = document.querySelector('#ai-form');
+const birthMonth = document.querySelector('#birth-month');
+const birthDay = document.querySelector('#birth-day');
+const readingFocus = document.querySelector('#reading-focus');
+const aiSubmit = document.querySelector('#ai-submit');
+const aiMessage = document.querySelector('#ai-message');
+const aiResult = document.querySelector('#ai-result');
+const aiZodiac = document.querySelector('#ai-zodiac');
+const aiReading = document.querySelector('#ai-reading');
 let zodiacSigns = [];
 const selectedSigns = new Set();
 
@@ -32,6 +42,7 @@ function showApp() {
 function switchTab(tab) {
   tasksPanel.hidden = tab !== 'tasks';
   zodiacPanel.hidden = tab !== 'zodiac';
+  aiPanel.hidden = tab !== 'ai';
   tabButtons.forEach(button => button.classList.toggle('active', button.dataset.tab === tab));
   if (tab === 'zodiac' && !zodiacSigns.length) loadZodiac();
 }
@@ -184,6 +195,35 @@ zodiacSearch.addEventListener('input', () => {
     || sign.element.includes(query)
   );
   renderZodiacOptions(filtered);
+});
+
+aiForm.addEventListener('submit', async event => {
+  event.preventDefault();
+  aiSubmit.disabled = true;
+  aiSubmit.textContent = '產生中…';
+  aiMessage.textContent = 'Gemini 正在整理你的個人化解讀，請稍候。';
+  aiResult.hidden = true;
+  try {
+    const result = await request('/api/ai-reading', {
+      method: 'POST',
+      body: JSON.stringify({
+        month: Number(birthMonth.value),
+        day: Number(birthDay.value),
+        focus: readingFocus.value,
+      }),
+    });
+    const sign = result.zodiac;
+    aiZodiac.textContent = `${sign.symbol} ${sign.name} ${sign.english}｜${sign.dates}`;
+    aiReading.textContent = result.reading;
+    aiResult.hidden = false;
+    aiMessage.textContent = `已使用 ${result.model} 完成解讀`;
+  } catch (error) {
+    if (error.status === 401) showLogin();
+    aiMessage.textContent = error.message;
+  } finally {
+    aiSubmit.disabled = false;
+    aiSubmit.textContent = '產生 AI 解讀';
+  }
 });
 
 async function initialize() {

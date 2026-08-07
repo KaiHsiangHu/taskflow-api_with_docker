@@ -24,6 +24,8 @@ conda install python-dotenv requests
 
 ```dotenv
 APP_PASSWORD=換成你的密碼
+GEMINI_API_KEY=貼上你的 Google AI Studio API Key
+GEMINI_MODEL=gemini-3.5-flash-lite
 ```
 
 直接執行 `python server.py` 時，程式會自動讀取 `.env`。這個檔案已被 `.gitignore` 排除，不會推送到 GitHub；`.env.example` 只提供欄位範例，可以正常提交。部署到 Render 時，不會使用本機 `.env`，請在服務的 **Environment** 頁面另外新增 `APP_PASSWORD`。
@@ -38,6 +40,7 @@ APP_PASSWORD=換成你的密碼
 | `POST` | `/api/logout` | 登出 |
 | `GET` | `/api/tasks` | 取得全部待辦 |
 | `GET` | `/api/zodiac` | 取得星座；可用 `?q=獅子` 搜尋 |
+| `POST` | `/api/ai-reading` | 依生日判斷星座並產生 Gemini 個人化解讀 |
 | `POST` | `/api/tasks` | 新增待辦，body: `{"title":"內容"}` |
 | `PATCH` | `/api/tasks/:id` | 更新待辦，body: `{"completed":true}` |
 | `DELETE` | `/api/tasks/:id` | 刪除待辦 |
