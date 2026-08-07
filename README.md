@@ -41,6 +41,7 @@ GEMINI_MODEL=gemini-3.5-flash-lite
 | `GET` | `/api/tasks` | 取得全部待辦 |
 | `GET` | `/api/zodiac` | 取得星座；可用 `?q=獅子` 搜尋 |
 | `POST` | `/api/ai-reading` | 依生日判斷星座並產生 Gemini 個人化解讀 |
+| `GET/POST` | `/api/demo-state` | `client.py` 與已開啟網頁之間的測試操作同步 |
 | `POST` | `/api/tasks` | 新增待辦，body: `{"title":"內容"}` |
 | `PATCH` | `/api/tasks/:id` | 更新待辦，body: `{"completed":true}` |
 | `DELETE` | `/api/tasks/:id` | 刪除待辦 |

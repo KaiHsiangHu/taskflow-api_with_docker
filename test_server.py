@@ -24,6 +24,16 @@ class ApiTest(unittest.TestCase):
     def setUp(self):
         server.STORE = server.TaskStore()
         server.SESSIONS.clear()
+        server.DEMO_STATE.update({
+            "version": 0,
+            "active_tab": "tasks",
+            "selected_signs": [],
+            "month": "",
+            "day": "",
+            "focus": "",
+            "refresh_tasks": False,
+            "generate_ai": False,
+        })
         self.cookie = None
 
     def request(self, method, path, body=None):
@@ -125,6 +135,26 @@ class ApiTest(unittest.TestCase):
         )
         self.assertEqual(status, 400)
         self.assertIn("有效日期", error["error"])
+
+    def test_demo_state_sync(self):
+        self.login()
+        status, state = self.request("POST", "/api/demo-state", {
+            "active_tab": "zodiac",
+            "selected_signs": ["capricorn", "virgo"],
+            "month": 12,
+            "day": 24,
+            "focus": "星座的人格特質",
+            "refresh_tasks": True,
+            "generate_ai": True,
+        })
+        self.assertEqual(status, 200)
+        self.assertEqual(state["version"], 1)
+
+        status, state = self.request("GET", "/api/demo-state")
+        self.assertEqual(status, 200)
+        self.assertEqual(state["selected_signs"], ["capricorn", "virgo"])
+        self.assertEqual((state["month"], state["day"]), (12, 24))
+        self.assertTrue(state["generate_ai"])
 
 
 if __name__ == "__main__":

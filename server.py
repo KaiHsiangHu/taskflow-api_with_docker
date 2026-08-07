@@ -5,6 +5,7 @@ from __future__ import annotations
 import json
 import os
 import secrets
+import threading
 from datetime import date
 from http.cookies import SimpleCookie
 from http import HTTPStatus
@@ -30,6 +31,17 @@ STATIC_DIR = Path(__file__).with_name("frontend")
 ZODIAC_FILE = Path(__file__).with_name("data") / "zodiac.json"
 ZODIAC_SIGNS = json.loads(ZODIAC_FILE.read_text(encoding="utf-8"))
 ZODIAC_BY_ID = {sign["id"]: sign for sign in ZODIAC_SIGNS}
+DEMO_STATE_LOCK = threading.Lock()
+DEMO_STATE = {
+    "version": 0,
+    "active_tab": "tasks",
+    "selected_signs": [],
+    "month": "",
+    "day": "",
+    "focus": "",
+    "refresh_tasks": False,
+    "generate_ai": False,
+}
 
 
 def zodiac_for_date(month: int, day: int) -> dict:
@@ -198,6 +210,12 @@ class ApiHandler(BaseHTTPRequestHandler):
                 ]
             self._json(signs)
             return
+        if path == "/api/demo-state":
+            if not self._require_auth():
+                return
+            with DEMO_STATE_LOCK:
+                self._json(DEMO_STATE.copy())
+            return
         if path == "/api/auth":
             self._json({"authenticated": self._is_authenticated()})
             return
@@ -253,6 +271,43 @@ class ApiHandler(BaseHTTPRequestHandler):
                 self._json({"error": "AI 服務暫時無法使用，請稍後再試"}, HTTPStatus.BAD_GATEWAY)
                 return
             self._json({"zodiac": sign, "reading": reading, "model": GEMINI_MODEL})
+            return
+        if path == "/api/demo-state":
+            if not self._require_auth():
+                return
+            data = self._read_json()
+            try:
+                active_tab = data.get("active_tab", "tasks")
+                selected_signs = data.get("selected_signs", [])
+                month = data.get("month", "")
+                day = data.get("day", "")
+                focus = data.get("focus", "")
+                if active_tab not in {"tasks", "zodiac", "ai"}:
+                    raise ValueError
+                if not isinstance(selected_signs, list) or any(
+                    sign not in ZODIAC_BY_ID for sign in selected_signs
+                ):
+                    raise ValueError
+                if not isinstance(focus, str) or len(focus) > 500:
+                    raise ValueError
+                if month != "" or day != "":
+                    zodiac_for_date(int(month), int(day))
+            except (AttributeError, TypeError, ValueError):
+                self._json({"error": "測試操作資料格式錯誤"}, HTTPStatus.BAD_REQUEST)
+                return
+            with DEMO_STATE_LOCK:
+                DEMO_STATE.update({
+                    "version": DEMO_STATE["version"] + 1,
+                    "active_tab": active_tab,
+                    "selected_signs": selected_signs,
+                    "month": month,
+                    "day": day,
+                    "focus": focus,
+                    "refresh_tasks": bool(data.get("refresh_tasks", False)),
+                    "generate_ai": bool(data.get("generate_ai", False)),
+                })
+                result = DEMO_STATE.copy()
+            self._json(result)
             return
         if path != "/api/tasks":
             self._json({"error": "找不到 API"}, HTTPStatus.NOT_FOUND)

@@ -27,16 +27,49 @@ const aiZodiac = document.querySelector('#ai-zodiac');
 const aiReading = document.querySelector('#ai-reading');
 let zodiacSigns = [];
 const selectedSigns = new Set();
+let demoVersion = 0;
+let demoPollId = null;
 
 function showLogin() {
   loginView.hidden = false;
   appView.hidden = true;
   passwordInput.focus();
+  if (demoPollId) clearInterval(demoPollId);
+  demoPollId = null;
 }
 
 function showApp() {
   loginView.hidden = true;
   appView.hidden = false;
+  startDemoPolling();
+}
+
+async function applyDemoState() {
+  try {
+    const state = await request('/api/demo-state');
+    if (!state.version || state.version <= demoVersion) return;
+    demoVersion = state.version;
+    if (state.refresh_tasks) await loadTasks();
+    if (!zodiacSigns.length) await loadZodiac();
+    selectedSigns.clear();
+    state.selected_signs.forEach(sign => selectedSigns.add(sign));
+    zodiacSearch.value = '';
+    renderZodiacOptions(zodiacSigns);
+    renderZodiacResults();
+    birthMonth.value = state.month;
+    birthDay.value = state.day;
+    readingFocus.value = state.focus;
+    switchTab(state.active_tab);
+    if (state.generate_ai) aiForm.requestSubmit();
+  } catch (error) {
+    if (error.status === 401) showLogin();
+  }
+}
+
+function startDemoPolling() {
+  if (demoPollId) return;
+  applyDemoState();
+  demoPollId = setInterval(applyDemoState, 1000);
 }
 
 function switchTab(tab) {

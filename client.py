@@ -20,64 +20,16 @@
 #   -Body '{"title":"練習 POST API"}'
 
 
-## ==================== without requests ======================== ##
-# import json
-# from urllib.request import Request, urlopen
-
-
-# BASE_URL = "http://127.0.0.1:8000"
-
-
-# def get_tasks():
-#     """GET：取得全部待辦事項。"""
-#     with urlopen(f"{BASE_URL}/api/tasks") as response:
-#         return json.load(response)
-
-
-# def create_task(title):
-#     """POST：新增待辦事項。"""
-#     body = json.dumps(
-#         {"title": title},
-#         ensure_ascii=False,
-#     ).encode("utf-8")
-
-#     request = Request(
-#         f"{BASE_URL}/api/tasks",
-#         data=body,
-#         method="POST",
-#         headers={"Content-Type": "application/json"},
-#     )
-
-#     with urlopen(request) as response:
-#         return json.load(response)
-
-
-# if __name__ == "__main__":
-#     print("目前的待辦事項：")
-
-#     tasks = get_tasks()
-#     for task in tasks:
-#         print(task)
-
-#     print("\n新增待辦事項：")
-
-#     new_task = create_task("使用 Python 呼叫 POST API")
-#     print(new_task)
-
-#     print("\n更新後的待辦事項：")
-
-#     tasks = get_tasks()
-#     for task in tasks:
-#         print(task)
-
-
-## ==================== with requests ======================== ##
+## ============================================ ##
 import os
 
 import requests
+from dotenv import load_dotenv
 
 
-BASE_URL = "http://127.0.0.1:8000"
+load_dotenv()
+
+BASE_URL = os.environ.get("BASE_URL", "http://127.0.0.1:8000").rstrip("/")
 PASSWORD = os.environ.get("APP_PASSWORD", "taskflow123")
 session = requests.Session()
 
@@ -114,3 +66,24 @@ response.raise_for_status()
 new_task = response.json()
 print(new_task)
 
+
+# 第二、第三分頁：將測試操作同步到目前開啟的網頁
+response = session.post(
+    f"{BASE_URL}/api/demo-state",
+    json={
+        "active_tab": "ai",
+        "selected_signs": ["capricorn", "virgo"],
+        "month": 12,
+        "day": 24,
+        "focus": "星座的人格特質",
+        "refresh_tasks": True,
+        "generate_ai": True,
+    },
+    timeout=10,
+)
+response.raise_for_status()
+
+print("第二分頁：已勾選摩羯座和處女座")
+print("第三分頁：已填入 12 月 24 日，以及『星座的人格特質』")
+print("第三分頁：已執行『產生 AI 解讀』")
+print("請查看已開啟的網頁；畫面會在一秒內同步。")
