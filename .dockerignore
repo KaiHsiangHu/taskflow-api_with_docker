@@ -1,0 +1,20 @@
+.git
+.gitignore
+.vscode
+.env
+.env.*
+!.env.example
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.coverage
+.venv/
+venv/
+API example/
+client.py
+test_server.py
+README.md
+Dockerfile*
+docker-compose*.yml
+compose.yaml
+render.yaml
